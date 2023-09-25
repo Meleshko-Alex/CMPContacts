@@ -63,7 +63,6 @@ fun ContactListScreen(
                 ContactListItem(
                     contact = contact,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .clickable {
                             onEvent(ContactListEvent.SelectContact(contact))
