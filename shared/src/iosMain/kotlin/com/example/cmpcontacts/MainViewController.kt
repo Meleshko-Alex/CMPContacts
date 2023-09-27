@@ -1,6 +1,7 @@
 package com.example.cmpcontacts
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.example.cmpcontacts.di.AppModule
 import platform.UIKit.UIScreen
 import platform.UIKit.UIUserInterfaceStyle
 
@@ -12,6 +13,7 @@ fun MainViewController() = ComposeUIViewController {
         UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyle.UIUserInterfaceStyleDark
     App(
         darkTheme = isDarkTheme,
-        dynamicColor = false
+        dynamicColor = false,
+        appModule = AppModule()
     )
 }

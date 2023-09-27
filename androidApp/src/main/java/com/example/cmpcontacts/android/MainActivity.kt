@@ -5,8 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.cmpcontacts.App
+import com.example.cmpcontacts.di.AppModule
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +16,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(
                 darkTheme = isSystemInDarkTheme(),
-                dynamicColor = false
+                dynamicColor = false,
+                appModule = AppModule(LocalContext.current)
             )
         }
     }
@@ -26,6 +29,7 @@ class MainActivity : ComponentActivity() {
 fun DefaultPreview() {
     App(
         darkTheme = isSystemInDarkTheme(),
-        dynamicColor = true
+        dynamicColor = true,
+        appModule = AppModule(LocalContext.current)
     )
 }
