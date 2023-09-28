@@ -24,6 +24,7 @@ import com.example.cmpcontacts.contacts.domain.Contact
 import com.example.cmpcontacts.contacts.presentation.components.AddContactSheet
 import com.example.cmpcontacts.contacts.presentation.components.ContactDetailsSheet
 import com.example.cmpcontacts.contacts.presentation.components.ContactListItem
+import com.example.cmpcontacts.contacts.presentation.components.RecentlyAddedContacts
 import com.example.cmpcontacts.core.presentation.ImagePicker
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +58,14 @@ fun ContactListScreen(
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                RecentlyAddedContacts(
+                    contacts = state.recentlyAddedContacts,
+                    onClick = {
+                        onEvent(ContactListEvent.SelectContact(it))
+                    }
+                )
+            }
             item {
                 Text(
                     text = "My contacts (${state.contacts.size})",
