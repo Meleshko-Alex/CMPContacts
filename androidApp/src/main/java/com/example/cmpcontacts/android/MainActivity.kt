@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.cmpcontacts.App
+import com.example.cmpcontacts.core.presentation.ImagePickerFactory
 import com.example.cmpcontacts.di.AppModule
 
 class MainActivity : ComponentActivity() {
@@ -17,19 +18,10 @@ class MainActivity : ComponentActivity() {
             App(
                 darkTheme = isSystemInDarkTheme(),
                 dynamicColor = false,
-                appModule = AppModule(LocalContext.current)
+                appModule = AppModule(LocalContext.current),
+                imagePicker = ImagePickerFactory().createPicker()
             )
         }
     }
 }
 
-
-@Preview
-@Composable
-fun DefaultPreview() {
-    App(
-        darkTheme = isSystemInDarkTheme(),
-        dynamicColor = true,
-        appModule = AppModule(LocalContext.current)
-    )
-}
