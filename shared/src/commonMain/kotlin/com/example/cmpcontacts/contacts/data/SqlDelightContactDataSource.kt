@@ -2,14 +2,20 @@ package com.example.cmpcontacts.contacts.data
 
 import com.example.cmpcontacts.contacts.domain.Contact
 import com.example.cmpcontacts.contacts.domain.ContactDataSource
+import com.example.cmpcontacts.core.data.ImageStorage
 import com.example.cmpcontacts.database.ContactDatabase
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
 
-class SqlDelightContactDataSource(db: ContactDatabase) : ContactDataSource {
+class SqlDelightContactDataSource(
+    db: ContactDatabase,
+    private val imageStorage: ImageStorage
+) : ContactDataSource {
 
     private val queries = db.contactQueries
 
@@ -19,8 +25,10 @@ class SqlDelightContactDataSource(db: ContactDatabase) : ContactDataSource {
             .asFlow()
             .mapToList()
             .map { contactEntities ->
-                contactEntities.map {
-                    it.toContact()
+                supervisorScope {
+                    contactEntities
+                        .map { async { it.toContact(imageStorage) } }
+                        .map { it.await() }
                 }
             }
     }
@@ -31,25 +39,34 @@ class SqlDelightContactDataSource(db: ContactDatabase) : ContactDataSource {
             .asFlow()
             .mapToList()
             .map { contactEntities ->
-                contactEntities.map {
-                    it.toContact()
+                supervisorScope {
+                    contactEntities
+                        .map { async { it.toContact(imageStorage) } }
+                        .map { it.await() }
                 }
             }
     }
 
     override suspend fun insertContact(contact: Contact) {
+        val imagePath = contact.photoBytes?.let {
+            imageStorage.saveImage(it)
+        }
         queries.insertContactEntity(
             id = contact.id,
             firstName = contact.firstName,
             lastName = contact.lastName,
             email = contact.email,
             phoneNumber = contact.phoneNumber,
-            imagePath = null,
+            imagePath = imagePath,
             createdAt = Clock.System.now().toEpochMilliseconds()
         )
     }
 
     override suspend fun deleteContact(id: Long) {
+        val entity = queries.getContactById(id).executeAsOne()
+        entity.imagePath?.let {
+            imageStorage.deleteImage(it)
+        }
         queries.deleteContact(id)
     }
 }
